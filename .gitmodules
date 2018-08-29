@@ -6,4 +6,4 @@
 	url = https://github.com/glfw/glfw.git
 [submodule "libs/gl3w"]
 	path = libs/gl3w
-	url =
+	url = https://github.com/skaslev/gl3w.git

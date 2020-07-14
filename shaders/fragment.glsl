@@ -1,12 +1,12 @@
 #version 330 core
 
 // Ouput data
-out vec3 color;
+in vec3 Normal;
+in vec3 TexCoords;
+uniform sampler2D albedo;
+out vec4 color;
 
 void main()
 {
-
-	// Output color = red
-	color = vec3(1,0,0);
-
+	color = texture(albedo, TexCoords.xy);
 }

@@ -7,3 +7,9 @@
 [submodule "libs/gl3w"]
 	path = libs/gl3w
 	url = https://github.com/skaslev/gl3w.git
+[submodule "libs/assimp"]
+	path = libs/assimp
+	url = https://github.com/assimp/assimp.git
+[submodule "libs/Simple-OpenGL-Image-Library"]
+	path = libs/Simple-OpenGL-Image-Library
+	url = https://github.com/kbranigan/Simple-OpenGL-Image-Library.git

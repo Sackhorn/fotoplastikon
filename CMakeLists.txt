@@ -20,13 +20,27 @@ add_subdirectory(libs/glm)
 ############### GL3W #####################
 add_subdirectory(libs/gl3w)
 
+
+############### ASSIMP LOADER #####################
+add_subdirectory(libs/assimp)
+
+
+############### SAIL LOADER #####################
+add_subdirectory(libs/Simple-OpenGL-Image-Library)
+
 ############### COMMON FILES #################
 file(GLOB COMMON_CPP "src/common/*.cpp")
 include_directories(src/common/)
 
 ############### MAIN TARGET ##################
-add_executable(main_app  src/main.cpp ${COMMON_CPP})
-target_link_libraries(main_app glfw gl3w glm ${OPENGL_LIBRARIES})
+add_library(meshes src/common/StaticMesh.cpp src/common/StaticMesh.h)
+target_link_libraries(meshes gl3w glm assimp ${OPENGL_LIBRARIES})
+
+add_library(materials src/common/Shader.cpp src/common/Shader.h src/common/Material.cpp src/common/Material.h src/common/LoadShader.cpp src/common/LoadShader.hpp)
+target_link_libraries(materials gl3w glm SOIL ${OPENGL_LIBRARIES})
+
+add_executable(main_app src/main.cpp)
+target_link_libraries(main_app meshes materials glfw gl3w glm ${OPENGL_LIBRARIES})
 
 
 

@@ -6,9 +6,9 @@
 #include "../../libs/Simple-OpenGL-Image-Library/src/SOIL.h"
 #include <assert.h>
 
-Material::Material(const char *texturePath) {
+Material::Material(const char *albedoPath) {
     int width, height, channels;
-    unsigned char* albedo = SOIL_load_image(texturePath, &width, &height, &channels, SOIL_LOAD_RGBA);
+    unsigned char* albedo = SOIL_load_image(albedoPath, &width, &height, &channels, SOIL_LOAD_RGBA);
     assert(("failed to load albedo texture", albedo));
     glGenTextures(1, &Albedo);
     glBindTexture(GL_TEXTURE_2D, Albedo);

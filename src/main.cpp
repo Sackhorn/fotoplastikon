@@ -1,71 +1,81 @@
-#include <cstdio>
-#include <StaticMesh.h>
-#include <GL/gl3w.h>
-#include <GLFW/glfw3.h>
-#include <LoadShader.hpp>
-#include <iostream>
-#include "Material.h"
+#define NOMINMAX
 
-using namespace glm;
-GLFWwindow* window;
+#if defined(_MSC_VER)
+    #define HS(str) __pragma(warning(suppress:4307)) entt::hashed_string{str}
+#else
+    #define HS(str) entt::hashed_string{str}
+#endif
+
+
+#include <TransformComponent.h>
+#include "MeshComponent.h"
+#include "Renderer.h"
+#include "RegistryHierarchy.h"
+#include "CameraComponent.h"
+#include <thread>
+
+void foo()
+{
+    while(true)
+    {
+        auto* meshComponent = new Texture("../mesh/color.png");
+        delete meshComponent;
+    }
+}
 
 int main()
 {
-// Initialise GLFW
-	if( !glfwInit() )
-	{
-		fprintf( stderr, "Failed to initialize GLFW\n" );
-		getchar();
-		return -1;
-	}
+    entt::registry* mainRegistry = MainRegistry::GetMainRegistry();
+    auto renderer = Renderer();
 
-	glfwWindowHint(GLFW_SAMPLES, 4);
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE); // To make MacOS happy; should not be needed
-	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+    auto camera = MainRegistry::createEntity();
+    auto& cameraComponent = mainRegistry->emplace<CameraComponent>(camera);
+    auto& cameraTransform = mainRegistry->get<TransformComponent>(camera);
+    auto camera2 = MainRegistry::createEntity();
+    auto& cameraComponent2 = mainRegistry->emplace<CameraComponent>(camera2);
 
-	// Open a window and create its OpenGL context
-	window = glfwCreateWindow( 1024, 768, "OpenGL", NULL, NULL);
-	if( window == NULL ){
-		fprintf( stderr, "Failed to open GLFW window. If you have an Intel GPU, they are not 3.3 compatible. Try the 2.1 version of the tutorials.\n" );
-		getchar();
-		glfwTerminate();
-		return -1;
-	}
-	glfwMakeContextCurrent(window);
+    vector<vec3> meshesPositions = {
+            vec3(0.0, 1.0, -3.0),
+            vec3(0.0, -1.0, -3.0),
+            vec3(-1.0, 0.0, -3.0),
+            vec3(1.0, 0.0, -3.0),
 
-	if (gl3wInit()) {
-		fprintf(stderr, "Failed to initialize gl3w\n");
-		return -1;
-	}
+            vec3(1.0, 1.0, -3.0),
+            vec3(1.0, -1.0, -3.0),
+            vec3(-1.0, 1.0, -3.0),
+            vec3(-1.0, -1.0, -3.0),
+            vec3(0.0, 0.0, -3.0),
 
-	// Ensure we can capture the escape key being pressed below
-	glfwSetInputMode(window, GLFW_STICKY_KEYS, GL_TRUE);
+    };
+    srand(time(NULL));
+    for(vec3 position: meshesPositions)
+    {
+        entt::entity mesh = MainRegistry::createEntity();
+        MeshComponent &meshComponent = mainRegistry->emplace<MeshComponent>(mesh, "../mesh/sphere.obj");
+        TransformComponent* meshTransform = &mainRegistry->get<TransformComponent>(mesh);
+        meshTransform->_position = position;
+        meshTransform->_scale = vec3(0.5);
+        if(rand() % 2 == 0)
+        {
+            meshComponent.materialComponent->albedo = make_unique<Texture>("../mesh/color.png");
+        }
+        meshTransform->UpdateMatrices();
+    }
 
-	// Dark blue background
-	glClearColor(0.0f, 0.0f, 0.4f, 0.0f);
-
-
-
-	// Create and compile our GLSL program from the shaders
-    auto* mesh = new StaticMesh("../mesh/cube_divided.fbx");
-    auto material = new Material("../mesh/Concrete_Wall_002_basecolor.png");
-
-    while( glfwGetKey(window, GLFW_KEY_ESCAPE ) != GLFW_PRESS &&
-           glfwWindowShouldClose(window) == 0 )
-	{
-		// Clear the screen
-		glClear( GL_COLOR_BUFFER_BIT );
-        mesh->Draw(*material);
-		// Swap buffers
-		glfwSwapBuffers(window);
-		glfwPollEvents();
-    } // Check if the ESC key was pressed or the window was closed
-
-	// Close OpenGL window and terminate GLFW
-	glfwTerminate();
-
+    auto old = glfwGetTime();
+//    std::thread run(foo);
+    while(renderer.PollInput())
+    {
+        auto newTime = glfwGetTime();
+        double dt = newTime - old;
+        old = newTime;
+        mainRegistry->view<TransformComponent, MeshComponent>().each([dt](auto entity, auto& transform, auto& mesh)
+        {
+            transform._rotation.y += dt * 1.0f;
+            transform.UpdateMatrices();
+        });
+        renderer.Update();
+    }
 	return 0;
 }
 

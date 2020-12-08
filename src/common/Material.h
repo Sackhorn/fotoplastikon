@@ -4,7 +4,7 @@
 
 #ifndef FRACTAL_RENDERER_MATERIAL_H
 #define FRACTAL_RENDERER_MATERIAL_H
-#include <Shader.h>
+#include <GLShader.h>
 #include <GL/gl3w.h>
 
 
@@ -12,7 +12,7 @@ class Material {
     Shader materialShader = Shader("../shaders/vertex.glsl", "../shaders/fragment.glsl" );
     GLuint Albedo;
 public:
-    explicit Material(const char* texturePath);
+    explicit Material(const char* albedoPath);
     GLuint shaderID = materialShader.shaderID;
 };
 

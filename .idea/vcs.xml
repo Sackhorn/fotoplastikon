@@ -2,8 +2,11 @@
 <project version="4">
   <component name="VcsDirectoryMappings">
     <mapping directory="$PROJECT_DIR$" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/cmake-build-debug/_deps/googletest-src" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/cmake-build-release/_deps/googletest-src" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/libs/Simple-OpenGL-Image-Library" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/libs/assimp" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/libs/fbx" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/libs/entt" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/libs/gl3w" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/libs/glfw" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/libs/glm" vcs="Git" />

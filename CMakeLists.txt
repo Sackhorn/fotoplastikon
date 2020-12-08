@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.2)
 project(fractal_renderer)
 
-set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD 17)
 
 ############### OpenGL######################
 find_package(OpenGL REQUIRED)
@@ -15,32 +15,71 @@ add_subdirectory(libs/glfw)
 include_directories(libs/glfw/include)
 
 ############### GLM ###########################
+message("##GLU##")
 add_subdirectory(libs/glm)
 
 ############### GL3W #####################
+message("##GL3W##")
 add_subdirectory(libs/gl3w)
+include_directories(libs/gl3w/include/GL)
 
 
 ############### ASSIMP LOADER #####################
+message("##ASSIMP##")
+SET (ASSIMP_BUILD_TESTS CACHE BOOL OFF)
 add_subdirectory(libs/assimp)
 
 
 ############### SAIL LOADER #####################
+message("##SOIL##")
 add_subdirectory(libs/Simple-OpenGL-Image-Library)
 
+############### entt ############################
+message("##ENTT##")
+add_subdirectory(libs/entt)
+include_directories(libs/entt/src)
+
+################ DirectX 12 #####################
+#message("##DIRECTX##")##
+#find_path(directx D3d12.dll)
+#find_path(directx_header D3d12.h)
+#message("DirectX D3d12.h path: " ${directx_header})
+#message("DirectX D3d12.dll path: " ${directx})
+#
+#include_directories(${directx_header})
+
 ############### COMMON FILES #################
-file(GLOB COMMON_CPP "src/common/*.cpp")
-include_directories(src/common/)
+message("##General Compilation##")
+#file(GLOB COMMON_CPP "src/common/*.cpp")
+#include_directories(src/common/ src/renderer src/general_components)
+include_directories(src/renderer src/general_components)
 
 ############### MAIN TARGET ##################
-add_library(meshes src/common/StaticMesh.cpp src/common/StaticMesh.h)
-target_link_libraries(meshes gl3w glm assimp ${OPENGL_LIBRARIES})
+add_library(components STATIC
+        src/general_components/TransformComponent.cpp src/general_components/TransformComponent.h
+        src/general_components/CameraComponent.cpp src/general_components/CameraComponent.h
+        src/general_components/RegistryHierarchy.h src/general_components/RegistryHierarchy.cpp)
+target_link_libraries(components glm)
 
-add_library(materials src/common/Shader.cpp src/common/Shader.h src/common/Material.cpp src/common/Material.h src/common/LoadShader.cpp src/common/LoadShader.hpp)
-target_link_libraries(materials gl3w glm SOIL ${OPENGL_LIBRARIES})
+#add_library(renderer STATIC
+#        src/renderer/Renderer.cpp src/renderer/Renderer.h
+#        src/renderer/GLShader.h src/renderer/GLShader.cpp
+#        src/renderer/MeshComponent.cpp src/renderer/MeshComponent.h
+#        src/renderer/MaterialComponent.cpp src/renderer/MaterialComponent.h
+#        src/renderer/LoadShader.cpp src/renderer/LoadShader.h
+#        )
+add_library(renderer STATIC
+        src/renderer/Renderer.cpp
+        src/renderer/GLShader.cpp
+        src/renderer/MeshComponent.cpp
+        src/renderer/MaterialComponent.cpp
+        src/renderer/LoadShader.cpp
+        src/renderer/Texture.cpp src/renderer/Texture.h)
+#target_include_directories(renderer PRIVATE src/renderer)
+target_link_libraries(renderer glfw gl3w glm assimp components SOIL ${OPENGL_LIBRARIES})
 
 add_executable(main_app src/main.cpp)
-target_link_libraries(main_app meshes materials glfw gl3w glm ${OPENGL_LIBRARIES})
+target_link_libraries(main_app renderer components)
 
 
 

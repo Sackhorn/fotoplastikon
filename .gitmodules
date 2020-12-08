@@ -13,3 +13,6 @@
 [submodule "libs/Simple-OpenGL-Image-Library"]
 	path = libs/Simple-OpenGL-Image-Library
 	url = https://github.com/kbranigan/Simple-OpenGL-Image-Library.git
+[submodule "libs/entt"]
+	path = libs/entt
+	url = https://github.com/skypjack/entt.git

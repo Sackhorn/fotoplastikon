@@ -11,6 +11,8 @@
 #include "entt/entt.hpp"
 #include "MeshComponent.h"
 #include "TransformComponent.h"
+#include "DirectionalLightComponent.h"
+#include "PointLightComponent.h"
 
 class Renderer {
 
@@ -23,8 +25,10 @@ public:
     void CreateWindowContext(int width, int height);
     void Update();
     bool PollInput();
-    static void SubmitMeshComponent(MeshComponent *meshComponent, TransformComponent *transformComponent, mat4 view, mat4 projection);
     mat4 GetViewMatrix();
+    static void SubmitMeshComponent(MeshComponent *meshComponent, TransformComponent *transformComponent, mat4 view, mat4 projection);
+    static void PassDirLightsToShader(GLShader *shader);
+    static void PassPointLightsToShader(GLShader *shader);
 };
 
 

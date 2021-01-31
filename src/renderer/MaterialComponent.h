@@ -9,11 +9,15 @@
 #include "Texture.h"
 #include <GL/gl3w.h>
 
+using namespace glm;
+
+
 class MaterialComponent
 {
 public:
     std::unique_ptr<Texture> albedo;
     std::unique_ptr<GLShader> shader;
+    struct BasicMaterial material;
     MaterialComponent();
     explicit MaterialComponent(const char* texturePath);
     ~MaterialComponent();

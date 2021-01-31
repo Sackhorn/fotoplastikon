@@ -3,9 +3,9 @@
 //
 #include "RegistryHierarchy.h"
 
-MainRegistry* MainRegistry::_mainRegistry;
+unique_ptr<MainRegistry> MainRegistry::_mainRegistry;
 
-entt::entity MainRegistry::createEntity()
+entt::entity MainRegistry::CreateEntity()
 {
     entt::entity newEntity = (_mainRegistry->enttRegistry->create());
     _mainRegistry->enttRegistry->emplace<TransformComponent>(newEntity);
@@ -13,11 +13,11 @@ entt::entity MainRegistry::createEntity()
 }
 
 //TODO: consider making this a const pointer to a const value
-entt::registry *MainRegistry::GetMainRegistry()
+entt::registry * MainRegistry::GetMainRegistry()
 {
     if(_mainRegistry)
         return _mainRegistry->enttRegistry.get();
-    _mainRegistry = new MainRegistry();
+    _mainRegistry = unique_ptr<MainRegistry>(new MainRegistry());
     return _mainRegistry->enttRegistry.get();
 }
 

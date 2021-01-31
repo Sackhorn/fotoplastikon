@@ -1,7 +1,6 @@
 //
 // Created by kgb on 18.07.2020.
 //
-#define NOMINMAX
 #include "Renderer.h"
 #include "CameraComponent.h"
 #include <entt/entt.hpp>
@@ -80,12 +79,35 @@ mat4 Renderer::GetViewMatrix()
             cameraTransform = &transform;
     });
 
-    return view;
+    return cameraTransform->world;
 }
 
 bool Renderer::PollInput()
 {
     return glfwGetKey(window, GLFW_KEY_ESCAPE ) != GLFW_PRESS && glfwWindowShouldClose(window) == 0;
+}
+
+void Renderer::PassDirLightsToShader(GLShader* shader)
+{
+    auto view = MainRegistry::GetMainRegistry()->view<DirectionalLightComponent>();
+    for(auto entity : view)
+    {
+        shader->SetDirectionalLight(view.get<DirectionalLightComponent>(entity));
+    }
+}
+
+void Renderer::PassPointLightsToShader(GLShader* shader)
+{
+    auto view = MainRegistry::GetMainRegistry()->view<PointLightComponent, TransformComponent>();
+    int i = 0;
+    for(auto entity : view)
+    {
+        auto& transform = view.get<TransformComponent>(entity);
+        auto& pointLight = view.get<PointLightComponent>(entity);
+        shader->SetPointLight(pointLight, transform, i);
+        i++;
+    }
+    shader->SetInt(i, "pointLightsNmbr");
 }
 
 void Renderer::SubmitMeshComponent(MeshComponent *meshComponent, TransformComponent *transformComponent, mat4 view, mat4 projection)
@@ -96,12 +118,14 @@ void Renderer::SubmitMeshComponent(MeshComponent *meshComponent, TransformCompon
     unsigned int textureID = meshComponent->materialComponent->albedo->textureID;
     glUseProgram(shaderID);
     glBindVertexArray(*(meshComponent->VAO));
+    PassDirLightsToShader(shader);
+    PassPointLightsToShader(shader);
     shader->SetMat4(wvp, "wvp");
     shader->SetMat4(transformComponent->world, "world");
     shader->SetMat4(view, "view");
     shader->SetMat4(projection, "projection");
-    vec3 lightPos =  vec3(0.0, 0.0, 5.0);
+    shader->SetVec3(view[3], "viewPos");
     shader->SetTex(textureID, "albedo");
-    shader->SetVec3(lightPos, "lightPos");
+    shader->SetMaterialStruct(meshComponent->materialComponent->material);
     glDrawElements(GL_TRIANGLES, meshComponent->indices.size(), GL_UNSIGNED_INT, 0);
 }

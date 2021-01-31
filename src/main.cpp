@@ -1,11 +1,9 @@
-#define NOMINMAX
 
 #if defined(_MSC_VER)
     #define HS(str) __pragma(warning(suppress:4307)) entt::hashed_string{str}
 #else
     #define HS(str) entt::hashed_string{str}
 #endif
-
 
 #include <TransformComponent.h>
 #include "MeshComponent.h"
@@ -14,25 +12,24 @@
 #include "CameraComponent.h"
 #include <thread>
 
-void foo()
-{
-    while(true)
-    {
-        auto* meshComponent = new Texture("../mesh/color.png");
-        delete meshComponent;
-    }
-}
-
 int main()
 {
     entt::registry* mainRegistry = MainRegistry::GetMainRegistry();
     auto renderer = Renderer();
-
-    auto camera = MainRegistry::createEntity();
+    auto camera = MainRegistry::CreateEntity();
     auto& cameraComponent = mainRegistry->emplace<CameraComponent>(camera);
     auto& cameraTransform = mainRegistry->get<TransformComponent>(camera);
-    auto camera2 = MainRegistry::createEntity();
+    auto camera2 = MainRegistry::CreateEntity();
     auto& cameraComponent2 = mainRegistry->emplace<CameraComponent>(camera2);
+    TransformComponent& camera2Transform = mainRegistry->get<TransformComponent>(camera2);
+    camera2Transform._position.z -= 3.0f;
+    camera2Transform.UpdateMatrices();
+    auto dirLight = MainRegistry::CreateEntity();
+    auto pointLight = MainRegistry::CreateEntity();
+//    auto& dirLightComponent = mainRegistry->emplace<DirectionalLightComponent>(dirLight, vec3(0.0, 0.0, 1.0), vec3(1.0));
+    auto& pointLightComponent = mainRegistry->emplace<PointLightComponent>(pointLight, vec3(1.0));
+    auto& pointLightTransform = mainRegistry->get<TransformComponent>(pointLight);
+    pointLightTransform._position = vec3(0.0, 0.0, -3.0f);
 
     vector<vec3> meshesPositions = {
             vec3(0.0, 1.0, -3.0),
@@ -44,13 +41,13 @@ int main()
             vec3(1.0, -1.0, -3.0),
             vec3(-1.0, 1.0, -3.0),
             vec3(-1.0, -1.0, -3.0),
-            vec3(0.0, 0.0, -3.0),
+            vec3(0.0, 0.0, -6.0),
 
     };
     srand(time(NULL));
     for(vec3 position: meshesPositions)
     {
-        entt::entity mesh = MainRegistry::createEntity();
+        entt::entity mesh = MainRegistry::CreateEntity();
         MeshComponent &meshComponent = mainRegistry->emplace<MeshComponent>(mesh, "../mesh/sphere.obj");
         TransformComponent* meshTransform = &mainRegistry->get<TransformComponent>(mesh);
         meshTransform->_position = position;
@@ -63,7 +60,7 @@ int main()
     }
 
     auto old = glfwGetTime();
-//    std::thread run(foo);
+
     while(renderer.PollInput())
     {
         auto newTime = glfwGetTime();
@@ -73,6 +70,14 @@ int main()
         {
             transform._rotation.y += dt * 1.0f;
             transform.UpdateMatrices();
+        });
+        mainRegistry->view<TransformComponent, CameraComponent>().each([dt](auto entity, auto& transform, auto& mesh){
+            glm::vec3 rotAxis(0.0, 1.0, 0.0);
+            float angle = glm::radians(60.0 * dt);
+            vec3 rotateAroundPoint = vec3(0.0, 0.0, -3.0);
+            mat4 tmp = glm::translate(transform.world, rotateAroundPoint);
+            tmp = glm::rotate(tmp, angle, rotAxis);
+            transform.world = glm::translate(tmp, -rotateAroundPoint);
         });
         renderer.Update();
     }

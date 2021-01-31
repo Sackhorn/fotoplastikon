@@ -20,7 +20,7 @@ add_subdirectory(libs/glm)
 
 ############### GL3W #####################
 message("##GL3W##")
-add_subdirectory(libs/gl3w)
+add_subdirectory(libs/gl3w libs/gl3w)
 include_directories(libs/gl3w/include/GL)
 
 
@@ -61,23 +61,19 @@ add_library(components STATIC
         src/general_components/RegistryHierarchy.h src/general_components/RegistryHierarchy.cpp)
 target_link_libraries(components glm)
 
-#add_library(renderer STATIC
-#        src/renderer/Renderer.cpp src/renderer/Renderer.h
-#        src/renderer/GLShader.h src/renderer/GLShader.cpp
-#        src/renderer/MeshComponent.cpp src/renderer/MeshComponent.h
-#        src/renderer/MaterialComponent.cpp src/renderer/MaterialComponent.h
-#        src/renderer/LoadShader.cpp src/renderer/LoadShader.h
-#        )
 add_library(renderer STATIC
         src/renderer/Renderer.cpp
         src/renderer/GLShader.cpp
         src/renderer/MeshComponent.cpp
         src/renderer/MaterialComponent.cpp
         src/renderer/LoadShader.cpp
-        src/renderer/Texture.cpp src/renderer/Texture.h)
-#target_include_directories(renderer PRIVATE src/renderer)
+        src/renderer/LightComponent.cpp
+        src/renderer/Texture.cpp
+        src/renderer/DirectionalLightComponent.cpp
+        src/renderer/PointLightComponent.cpp)
 target_link_libraries(renderer glfw gl3w glm assimp components SOIL ${OPENGL_LIBRARIES})
 
+add_compile_definitions(NOMINMAX)
 add_executable(main_app src/main.cpp)
 target_link_libraries(main_app renderer components)
 

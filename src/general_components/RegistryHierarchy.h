@@ -10,13 +10,12 @@
 #include "TransformComponent.h"
 class MainRegistry
 {
-private:
     MainRegistry();
 public:
-    static MainRegistry* _mainRegistry;
+    static unique_ptr<MainRegistry> _mainRegistry;
     unique_ptr<entt::registry> enttRegistry;
     static entt::registry * GetMainRegistry();
-    static entt::entity createEntity();
+    static entt::entity CreateEntity();
     ~MainRegistry();
 };
 

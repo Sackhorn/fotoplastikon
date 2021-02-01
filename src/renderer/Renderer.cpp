@@ -110,6 +110,20 @@ void Renderer::PassPointLightsToShader(GLShader* shader)
     shader->SetInt(i, "pointLightsNmbr");
 }
 
+void Renderer::PassSpotLightsToShader(GLShader *shader)
+{
+    auto view = MainRegistry::GetMainRegistry()->view<SpotLightComponent, TransformComponent>();
+    int i = 0;
+    for(auto entity : view)
+    {
+        auto& transform = view.get<TransformComponent>(entity);
+        auto& spotlight = view.get<SpotLightComponent>(entity);
+        shader->SetSpotLight(spotlight, transform, i);
+        i++;
+    }
+    shader->SetInt(i, "spotLightsNmbr");
+}
+
 void Renderer::SubmitMeshComponent(MeshComponent *meshComponent, TransformComponent *transformComponent, mat4 view, mat4 projection)
 {
     auto wvp = projection * view * transformComponent->world;
@@ -120,6 +134,7 @@ void Renderer::SubmitMeshComponent(MeshComponent *meshComponent, TransformCompon
     glBindVertexArray(*(meshComponent->VAO));
     PassDirLightsToShader(shader);
     PassPointLightsToShader(shader);
+    PassSpotLightsToShader(shader);
     shader->SetMat4(wvp, "wvp");
     shader->SetMat4(transformComponent->world, "world");
     shader->SetMat4(view, "view");

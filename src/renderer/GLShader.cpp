@@ -89,3 +89,14 @@ void GLShader::SetPointLight(const PointLightComponent &light, const TransformCo
     SetVec3(light.color, (first + std::string("color")).c_str());
     SetVec3(transform._position, (first + std::string("position")).c_str());
 }
+
+void GLShader::SetSpotLight(const SpotLightComponent& light, const TransformComponent& transform, int idx)
+{
+    std::string first("spotLights[");
+    first += std::to_string(idx);
+    first += std::string("].");
+    SetFloat(light.spotlightAngle, (first + std::string("lightAngle")).c_str());
+    SetVec3(light.color, (first + std::string("color")).c_str());
+    SetVec3(transform._position, (first + std::string("position")).c_str());
+    SetVec3(light.direction, (first + std::string("direction")).c_str());
+}

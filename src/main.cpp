@@ -25,12 +25,31 @@ int main()
     camera2Transform._position.z -= 3.0f;
     camera2Transform.UpdateMatrices();
     auto dirLight = MainRegistry::CreateEntity();
-    auto pointLight = MainRegistry::CreateEntity();
 //    auto& dirLightComponent = mainRegistry->emplace<DirectionalLightComponent>(dirLight, vec3(0.0, 0.0, 1.0), vec3(1.0));
-    auto& pointLightComponent = mainRegistry->emplace<PointLightComponent>(pointLight, vec3(1.0));
-    auto& pointLightTransform = mainRegistry->get<TransformComponent>(pointLight);
-    pointLightTransform._position = vec3(0.0, 0.0, -3.0f);
 
+//    auto pointLight = MainRegistry::CreateEntity();
+//    auto& pointLightComponent = mainRegistry->emplace<PointLightComponent>(pointLight, vec3(1.0));
+//    auto& pointLightTransform = mainRegistry->get<TransformComponent>(pointLight);
+//    pointLightTransform._position = vec3(0.0, 0.0, -10.0f);
+//    pointLightTransform.UpdateMatrices();
+//
+//    auto pointLight2 = MainRegistry::CreateEntity();
+//    auto& pointLightComponent2 = mainRegistry->emplace<PointLightComponent>(pointLight2, vec3(1.0));
+//    auto& pointLightTransform2 = mainRegistry->get<TransformComponent>(pointLight2);
+//    pointLightTransform2._position = vec3(0.0, 0.0, -3.0f);
+//    pointLightTransform2.UpdateMatrices();
+
+    auto spotLight = MainRegistry::CreateEntity();
+    auto& spotLightComponent = mainRegistry->emplace<SpotLightComponent>(
+            spotLight,
+            10.0f,
+            vec3(0.0f, 0.0f, -1.0f),
+            vec3(0.0f, 1.0f, 0.0f));
+    mainRegistry->get<TransformComponent>(spotLight)._position = vec3(0.0f, 0.0f, 2.0f);
+    mainRegistry->get<TransformComponent>(spotLight).UpdateMatrices();
+
+
+//
     vector<vec3> meshesPositions = {
             vec3(0.0, 1.0, -3.0),
             vec3(0.0, -1.0, -3.0),
@@ -42,6 +61,7 @@ int main()
             vec3(-1.0, 1.0, -3.0),
             vec3(-1.0, -1.0, -3.0),
             vec3(0.0, 0.0, -6.0),
+            vec3(0.0, 1.0, -6.0),
 
     };
     srand(time(NULL));

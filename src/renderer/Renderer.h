@@ -29,6 +29,7 @@ public:
     static void SubmitMeshComponent(MeshComponent *meshComponent, TransformComponent *transformComponent, mat4 view, mat4 projection);
     static void PassDirLightsToShader(GLShader *shader);
     static void PassPointLightsToShader(GLShader *shader);
+    static void PassSpotLightsToShader(GLShader *shader);
 };
 
 

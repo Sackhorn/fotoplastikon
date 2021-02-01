@@ -10,7 +10,8 @@
 #include <string>
 #include "DirectionalLightComponent.h"
 #include "PointLightComponent.h"
-#include "RegistryHierarchy.h"
+#include "SpotLightComponent.h"
+#include "TransformComponent.h"
 
 using namespace glm;
 
@@ -35,15 +36,13 @@ public:
     GLShader(const char *vertexShaderPath, const char *fragmentShaderPath);
     void SetVec3(const glm::vec3& vec3, const char *uniformName);
     void SetMat4(const glm::mat4& mat4, const char *uniformName);
+    void SetFloat(float floatVal, const char *uniformName);
+    void SetInt(int intVal, const char *uniformName);
     void SetTex(int texId, const char *uniformName);
     void SetMaterialStruct(const struct BasicMaterial& material);
     void SetDirectionalLight(const DirectionalLightComponent& light);
     void SetPointLight(const PointLightComponent& light, const TransformComponent& transform, int idx);
-    void SetSpotLight(const DirectionalLightComponent& light);
-
-    void SetFloat(float floatVal, const char *uniformName);
-
-    void SetInt(int intVal, const char *uniformName);
+    void SetSpotLight(const SpotLightComponent &light, const TransformComponent &transform, int idx);
 };
 
 #endif //FRACTAL_RENDERER_GLSHADER_H
